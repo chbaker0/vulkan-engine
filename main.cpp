@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cassert>
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
@@ -35,6 +36,10 @@ int main()
 
 	PFN_vkCreateInstance vkCreateInstance = (PFN_vkCreateInstance) glfwGetInstanceProcAddress(nullptr, "vkCreateInstance");
 
+	std::uint32_t extensionCount;
+	const char ** extensions = glfwGetRequiredInstanceExtensions(&extensionCount);
+	assert(extensions != nullptr);
+
 	VkInstanceCreateInfo instanceCreateInfo =
 		{
 			VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO, // sType
@@ -43,8 +48,8 @@ int main()
 			nullptr,								// pApplicationInfo
 			0,										// enabledLayerCount
 			nullptr,								// ppEnabledLayerNames
-			0,										// enabledExtensionCount
-			nullptr,								// ppEnabledExtensionNames
+			extensionCount,							// enabledExtensionCount
+			extensions,								// ppEnabledExtensionNames
 		};
 
 	VkInstance instanceHandle;
