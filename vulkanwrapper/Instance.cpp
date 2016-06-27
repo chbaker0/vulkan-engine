@@ -6,9 +6,8 @@ namespace vkw
 {
 
 Instance::Instance(VkInstance handle_in, GetProcAddrPtr getProcAddr)
-{
-	handle = handle_in;
-	
+	: handle(handle_in)
+{	
 #define LOAD_FUNCTION(X) functionPtrs.X = (PFN_##X) getProcAddr(handle, #X); assert(functionPtrs.X != nullptr)
 
 	LOAD_FUNCTION(vkGetInstanceProcAddr);

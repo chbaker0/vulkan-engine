@@ -20,10 +20,10 @@ protected:
 	
 public:
 	InstanceException(VkResult errorResult_in, std::string details_in) noexcept
-	{
-		errorResult = errorResult_in;
-		details = std::move(details_in);
-	}
+		: errorResult(errorResult_in)
+		, details(std::move(details_in))
+	{}
+	
 	InstanceException(const InstanceException& other) = default;
 	InstanceException(InstanceException&& other) noexcept = default;
 
@@ -57,10 +57,10 @@ public:
 	Instance(VkInstance handle_in, GetProcAddrPtr getProcAddr);
 	Instance(const Instance& other) = delete;
 	Instance(Instance&& other) noexcept
-	{
-		functionPtrs = other.functionPtrs;
-		handle = other.releaseInstance();
-	}
+		: handle(other.handle)
+		, functionPtrs(other.functionPtrs)
+	{}
+	
 	~Instance();
 
 	Instance& operator = (const Instance& other) = delete;
