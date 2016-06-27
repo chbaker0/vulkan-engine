@@ -58,7 +58,7 @@ public:
 	Instance(const Instance& other) = delete;
 	Instance(Instance&& other) noexcept
 	{
-	    functionPtrs = other.functionPtrs;
+		functionPtrs = other.functionPtrs;
 		handle = other.releaseInstance();
 	}
 	~Instance();
