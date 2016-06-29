@@ -48,7 +48,7 @@ protected:
 public:
 	struct FunctionPtrs
 	{
-		
+		#include "DeviceFunctionPtrs.inl"
 	};
 
 	FunctionPtrs functionPtrs;
