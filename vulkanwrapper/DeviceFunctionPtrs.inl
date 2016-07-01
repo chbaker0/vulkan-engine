@@ -49,7 +49,7 @@ PFN_vkGetPhysicalDeviceMemoryProperties				vkGetPhysicalDeviceMemoryProperties;
 PFN_vkAllocateMemory								vkAllocateMemory;
 PFN_vkFreeMemory									vkFreeMemory;
 PFN_vkMapMemory										vkMapMemory;
-PFN_vkFlushMappedMemoryRanges						vkFlushMappedMemoryRange;
+PFN_vkFlushMappedMemoryRanges						vkFlushMappedMemoryRanges;
 PFN_vkInvalidateMappedMemoryRanges					vkInvalidateMappedMemoryRanges;
 PFN_vkUnmapMemory									vkUnmapMemory;
 PFN_vkGetDeviceMemoryCommitment						vkGetDeviceMemoryCommitment;

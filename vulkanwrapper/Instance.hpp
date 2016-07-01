@@ -38,6 +38,8 @@ public:
 	}
 };
 
+class Device;
+
 class Instance
 {
 protected:
@@ -82,7 +84,11 @@ public:
 		return tempHandle;
 	}
 
-	#include "InstanceFunctions.inl"
+    std::vector<VkPhysicalDevice> enumeratePhysicalDevices();
+	VkPhysicalDeviceProperties getPhysicalDeviceProperties(VkPhysicalDevice physicalDevice) noexcept;
+	std::vector<VkQueueFamilyProperties> getPhysicalDeviceQueueFamilyProperties(VkPhysicalDevice physicalDevice);
+	VkPhysicalDeviceFeatures getPhysicalDeviceFeatures(VkPhysicalDevice physicalDevice) noexcept;
+	Device createDevice(VkPhysicalDevice phyDev, const VkDeviceCreateInfo& createInfo);
 };
 
 } // namespace vkw

@@ -38,6 +38,8 @@ public:
 	}
 };
 
+class Instance;
+
 class Device
 {
 protected:
@@ -94,7 +96,7 @@ public:
 	{
 		return instance;
 	}
-}
+};
 
 } // namespace vkw
 

@@ -1,8 +1,14 @@
 #include "Device.hpp"
+#include "Instance.hpp"
+
+#include <cassert>
+
+namespace vkw
+{
 
 Device::Device(VkDevice handle, VkPhysicalDevice physicalDevice, Instance *instance)
 {
-#define LOAD_FUNCTION(X) functionPtrs.X = (PFN_##X) getProcAddr(handle, #X); assert(functionPtrs.X != nullptr)
+#define LOAD_FUNCTION(X) functionPtrs.X = (PFN_##X) instance->functionPtrs.vkGetDeviceProcAddr(handle, #X); assert(functionPtrs.X != nullptr)
 
 	LOAD_FUNCTION(vkDestroyDevice);
 	LOAD_FUNCTION(vkDeviceWaitIdle);
@@ -55,7 +61,7 @@ Device::Device(VkDevice handle, VkPhysicalDevice physicalDevice, Instance *insta
 	LOAD_FUNCTION(vkAllocateMemory);
 	LOAD_FUNCTION(vkFreeMemory);
 	LOAD_FUNCTION(vkMapMemory);
-	LOAD_FUNCTION(vkFlushMappedMemoryRange);
+	LOAD_FUNCTION(vkFlushMappedMemoryRanges);
 	LOAD_FUNCTION(vkInvalidateMappedMemoryRanges);
 	LOAD_FUNCTION(vkUnmapMemory);
 	LOAD_FUNCTION(vkGetDeviceMemoryCommitment);
@@ -132,5 +138,7 @@ Device::Device(VkDevice handle, VkPhysicalDevice physicalDevice, Instance *insta
 
 Device::~Device()
 {
-	functionPtrs->vkDestroyDevice(handle, nullptr);
+	functionPtrs.vkDestroyDevice(handle, nullptr);
 }
+
+} // namespace vkw
