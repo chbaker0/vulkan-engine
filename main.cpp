@@ -14,6 +14,19 @@ void errorCallback(int error, const char *description)
 	cerr << error << ": " << description << endl;
 }
 
+VKAPI_ATTR VkBool32 VKAPI_CALL vulkanCallback(VkDebugReportFlagsEXT flags,
+											  VkDebugReportObjectTypeEXT objectType,
+											  uint64_t object,
+											  size_t location,
+											  int32_t messageCode,
+											  const char *pLayerPrefix,
+											  const char *pMessage,
+											  void *pUserData)
+{
+	cerr << pMessage << endl;
+	return VK_FALSE;
+}
+
 void * getInstanceProcAddrWrapper(VkInstance instance, const char *pname)
 {
 	return (void *) glfwGetInstanceProcAddress(instance, pname);
@@ -40,15 +53,19 @@ int main()
 	std::uint32_t extensionCount;
 	const char **glfwExtensions = glfwGetRequiredInstanceExtensions(&extensionCount);
 
-	++extensionCount;
-	std::vector<const char*> extensions(extensionCount);
+	std::vector<const char*> extensions(extensionCount + 1);
 
 	for(unsigned int i = 0; i < extensionCount; ++i)
 	{
 		extensions[i] = glfwExtensions[i];
 	}
 
-	extensions[extensionCount - 1] = "VK_EXT_debug_report";
+	extensions[extensionCount] = "VK_EXT_debug_report";
+
+	const char *layers[] =
+		{
+			"VK_LAYER_LUNARG_standard_validation"
+		};
 
 	VkInstanceCreateInfo instanceCreateInfo =
 		{
@@ -56,10 +73,10 @@ int main()
 			nullptr,								// pNext
 			0,										// flags
 			nullptr,								// pApplicationInfo
-			0,										// enabledLayerCount
-			nullptr,								// ppEnabledLayerNames
-			extensionCount,							// enabledExtensionCount
-			extensions,								// ppEnabledExtensionNames
+		    sizeof(layers) / sizeof (const char *),	// enabledLayerCount
+		    layers,									// ppEnabledLayerNames
+		    extensions.size(),						// enabledExtensionCount
+			extensions.data(),						// ppEnabledExtensionNames
 		};
 
 	VkInstance instanceHandle;
@@ -68,6 +85,22 @@ int main()
 		cerr << "Could not create Vulkan instance.\n";
 		return 1;
 	}
+
+	PFN_vkCreateDebugReportCallbackEXT vkCreateDebugReportCallbackEXT = (PFN_vkCreateDebugReportCallbackEXT) glfwGetInstanceProcAddress(instanceHandle, "vkCreateDebugReportCallbackEXT");
+	PFN_vkDestroyDebugReportCallbackEXT vkDestroyDebugReportCallbackEXT = (PFN_vkDestroyDebugReportCallbackEXT) glfwGetInstanceProcAddress(instanceHandle, "vkDestroyDebugReportCallbackEXT");
+
+	assert(vkCreateDebugReportCallbackEXT != nullptr);
+	assert(vkDestroyDebugReportCallbackEXT != nullptr);
+
+	VkDebugReportCallbackCreateInfoEXT callbackCreateInfo;
+	callbackCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
+	callbackCreateInfo.pNext = nullptr;
+	callbackCreateInfo.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT | VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT;
+	callbackCreateInfo.pfnCallback = &vulkanCallback;
+	callbackCreateInfo.pUserData = nullptr;
+
+	VkDebugReportCallbackEXT callback;
+	vkCreateDebugReportCallbackEXT(instanceHandle, &callbackCreateInfo, nullptr, &callback);
 
 	vkw::Instance instance(instanceHandle, getInstanceProcAddrWrapper);
 
@@ -107,12 +140,14 @@ int main()
 			0, // flags
 			1, // queueCreateInfoCount
 			&queueCreateInfo, // pQueueCreateInfos
-			0, // enabledLayerCount
-			nullptr, // ppEnabledLayerNames
-			0, // enabledExtensionsCount
-			nullptr, // ppEnabledExtensionNames
+		    0, // enabledLayerCount
+		    nullptr, // ppEnabledLayerNames
+			extensions.size(), // enabledExtensionsCount
+			extensions.data(), // ppEnabledExtensionNames
 			&features // pEnabledFeatures
 		};
 
 	vkw::Device device = instance.createDevice(physicalDevices[0], deviceCreateInfo);
+
+	vkDestroyDebugReportCallbackEXT(instanceHandle, callback, nullptr);
 }
