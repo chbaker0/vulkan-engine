@@ -59,9 +59,11 @@ public:
 	Instance(VkInstance handle_in, GetProcAddrPtr getProcAddr);
 	Instance(const Instance& other) = delete;
 	Instance(Instance&& other) noexcept
-		: handle(other.handle)
-		, functionPtrs(other.functionPtrs)
-	{}
+		: handle(VK_NULL_HANDLE)
+	{
+		std::swap(handle, other.handle);
+		std::swap(functionPtrs, other.functionPtrs);
+	}
 	
 	~Instance();
 

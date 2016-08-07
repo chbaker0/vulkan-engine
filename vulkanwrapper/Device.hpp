@@ -59,6 +59,9 @@ public:
 	Device(VkDevice handle, VkPhysicalDevice physicalDevice, Instance *instance);
 	Device(const Device& other) = delete;
 	Device(Device&& other) noexcept
+		: handle(VK_NULL_HANDLE)
+		, physicalDevice(VK_NULL_HANDLE)
+		, instance(nullptr)
 	{
 		std::swap(handle, other.handle);
 		std::swap(physicalDevice, other.physicalDevice);
