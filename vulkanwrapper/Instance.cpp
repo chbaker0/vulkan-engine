@@ -47,7 +47,7 @@ std::vector<VkPhysicalDevice> Instance::enumeratePhysicalDevices()
 		throw InstanceException(result, "Failed to enumerate physical devices");
 	}
 
-	return std::move(physicalDevices);
+	return physicalDevices;
 }
 
 VkPhysicalDeviceProperties Instance::getPhysicalDeviceProperties(VkPhysicalDevice physicalDevice) noexcept
@@ -66,7 +66,7 @@ std::vector<VkQueueFamilyProperties> Instance::getPhysicalDeviceQueueFamilyPrope
 
 	functionPtrs.vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, &queueFamilyProperties[0]);
 
-	return std::move(queueFamilyProperties);
+	return queueFamilyProperties;
 }
 
 VkPhysicalDeviceFeatures Instance::getPhysicalDeviceFeatures(VkPhysicalDevice physicalDevice) noexcept
