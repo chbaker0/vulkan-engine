@@ -12,7 +12,7 @@
 namespace vkw
 {
 
-class DeviceException : std::exception
+class DeviceException : public std::exception
 {
 protected:
 	VkResult errorResult;

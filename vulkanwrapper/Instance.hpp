@@ -12,7 +12,7 @@
 namespace vkw
 {
 
-class InstanceException : std::exception
+class InstanceException : public std::exception
 {
 protected:
 	VkResult errorResult;
