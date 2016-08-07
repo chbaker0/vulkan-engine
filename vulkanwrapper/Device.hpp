@@ -55,7 +55,13 @@ public:
 
 	FunctionPtrs functionPtrs;
 
-	Device() = delete;
+	Device() noexcept
+		: handle(VK_NULL_HANDLE)
+		, physicalDevice(VK_NULL_HANDLE)
+		, instance(nullptr)
+	{
+	}
+
 	Device(VkDevice handle, VkPhysicalDevice physicalDevice, Instance *instance);
 	Device(const Device& other) = delete;
 	Device(Device&& other) noexcept

@@ -17,13 +17,13 @@ class InstanceException : public std::exception
 protected:
 	VkResult errorResult;
 	std::string details;
-	
+
 public:
 	InstanceException(VkResult errorResult_in, std::string details_in) noexcept
 		: errorResult(errorResult_in)
 		, details(std::move(details_in))
 	{}
-	
+
 	InstanceException(const InstanceException& other) = default;
 	InstanceException(InstanceException&& other) noexcept = default;
 
@@ -31,7 +31,7 @@ public:
 	{
 		return errorResult;
 	}
-	
+
 	virtual const char * what() const noexcept
 	{
 		return details.c_str();
@@ -54,8 +54,12 @@ public:
 	FunctionPtrs functionPtrs;
 
 	typedef void * (*GetProcAddrPtr)(VkInstance, const char *);
-	
-	Instance() = delete;
+
+	Instance() noexcept
+		: handle(VK_NULL_HANDLE)
+	{
+	}
+
 	Instance(VkInstance handle_in, GetProcAddrPtr getProcAddr);
 	Instance(const Instance& other) = delete;
 	Instance(Instance&& other) noexcept
@@ -64,7 +68,7 @@ public:
 		std::swap(handle, other.handle);
 		std::swap(functionPtrs, other.functionPtrs);
 	}
-	
+
 	~Instance();
 
 	Instance& operator = (const Instance& other) = delete;
