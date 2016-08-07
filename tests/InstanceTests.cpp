@@ -19,6 +19,19 @@ protected:
 		std::cerr << "GLFW error: " << error << "; " << description << std::endl;
 	}
 
+	static VKAPI_ATTR VkBool32 VKAPI_CALL vulkanCallback(VkDebugReportFlagsEXT,
+														 VkDebugReportObjectTypeEXT,
+														 uint64_t,
+														 size_t,
+														 int32_t,
+														 const char *,
+														 const char *pMessage,
+														 void *)
+	{
+		std::cerr << pMessage << std::endl;
+		return VK_FALSE;
+	}
+
 	static void * getInstanceProcAddrWrapper (VkInstance instance, const char *pname)
 	{
 		return (void *) glfwGetInstanceProcAddress(instance, pname);
@@ -99,4 +112,24 @@ TEST_F(InstanceTest, InstanceCreationLayers)
 
 	vkw::Instance instance;
 	ASSERT_NO_THROW(createInstance(extensions, 1, layers, 1, instance));
+
+    auto vkCreateDebugReportCallbackEXT
+		= (PFN_vkCreateDebugReportCallbackEXT) glfwGetInstanceProcAddress(instance.getInstance(), "vkCreateDebugReportCallbackEXT");
+	ASSERT_NE(vkCreateDebugReportCallbackEXT, nullptr) << "Could not get pointer for vkCreateDebugReportCallbackEXT";
+
+	auto vkDestroyDebugReportCallbackEXT
+		= (PFN_vkDestroyDebugReportCallbackEXT) glfwGetInstanceProcAddress(instance.getInstance(), "vkDestroyDebugReportCallbackEXT");
+	ASSERT_NE(vkDestroyDebugReportCallbackEXT, nullptr) << "Could not get pointer for vkDestroyDebugReportCallbackEXT";
+
+	VkDebugReportCallbackCreateInfoEXT callbackCreateInfo;
+	callbackCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
+	callbackCreateInfo.pNext = nullptr;
+	callbackCreateInfo.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT | VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT;
+	callbackCreateInfo.pfnCallback = &vulkanCallback;
+	callbackCreateInfo.pUserData = nullptr;
+
+	VkDebugReportCallbackEXT callback;
+	ASSERT_EQ(vkCreateDebugReportCallbackEXT(instance.getInstance(), &callbackCreateInfo, nullptr, &callback), VK_SUCCESS) << "Could not create debug report callback object";
+
+	vkDestroyDebugReportCallbackEXT(instance.getInstance(), callback, nullptr);
 }
