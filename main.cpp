@@ -55,14 +55,17 @@ vkw::Instance createInstance ()
 	std::uint32_t extensionCount;
 	const char **glfwExtensions = glfwGetRequiredInstanceExtensions(&extensionCount);
 
-	std::vector<const char*> extensions(extensionCount);
+	std::vector<const char*> extensionsVec(extensionCount);
 
 	for (unsigned int i = 0; i < extensionCount; ++i)
 	{
-		extensions[i] = glfwExtensions[i];
+		extensionsVec[i] = glfwExtensions[i];
 	}
 
-	extensions.push_back("VK_EXT_debug_report");
+	for (unsigned int i = 0; i < sizeof(extensions) / sizeof(const char*); ++i)
+	{
+		extensionsVec.push_back(extensions[i]);
+	}
 
 	VkInstanceCreateInfo instanceCreateInfo =
 		{
@@ -72,8 +75,8 @@ vkw::Instance createInstance ()
 			nullptr,								// pApplicationInfo
 		    sizeof(layers) / sizeof (const char *),	// enabledLayerCount
 		    layers,									// ppEnabledLayerNames
-		    (uint32_t) extensions.size(),			// enabledExtensionCount
-			extensions.data(),						// ppEnabledExtensionNames
+		    (uint32_t) extensionsVec.size(),		// enabledExtensionCount
+			extensionsVec.data(),					// ppEnabledExtensionNames
 		};
 
 	VkInstance instanceHandle;
