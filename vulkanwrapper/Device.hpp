@@ -15,27 +15,27 @@ namespace vkw
 class DeviceException : public std::exception
 {
 protected:
-	VkResult errorResult;
-	std::string details;
+    VkResult errorResult;
+    std::string details;
 
 public:
-	DeviceException(VkResult errorResult_in, std::string details_in) noexcept
-		: errorResult(errorResult_in)
-		, details(std::move(details_in))
-	{}
+    DeviceException(VkResult errorResult_in, std::string details_in) noexcept
+        : errorResult(errorResult_in)
+        , details(std::move(details_in))
+    {}
 
-	DeviceException(const DeviceException& other) = delete;
-	DeviceException(DeviceException&& other) noexcept = default;
+    DeviceException(const DeviceException& other) = delete;
+    DeviceException(DeviceException&& other) noexcept = default;
 
-	VkResult getVkResult() const noexcept
-	{
-		return errorResult;
-	}
+    VkResult getVkResult() const noexcept
+    {
+        return errorResult;
+    }
 
-	virtual const char * what() const noexcept
-	{
-		return details.c_str();
-	}
+    virtual const char * what() const noexcept
+    {
+        return details.c_str();
+    }
 };
 
 class Instance;
@@ -43,70 +43,70 @@ class Instance;
 class Device
 {
 protected:
-	VkDevice handle;
-	VkPhysicalDevice physicalDevice;
-	Instance *instance;
+    VkDevice handle;
+    VkPhysicalDevice physicalDevice;
+    Instance *instance;
 
 public:
-	struct FunctionPtrs
-	{
-		#include "DeviceFunctionPtrs.inl"
-	};
+    struct FunctionPtrs
+    {
+        #include "DeviceFunctionPtrs.inl"
+    };
 
-	FunctionPtrs functionPtrs;
+    FunctionPtrs functionPtrs;
 
-	Device() noexcept
-		: handle(VK_NULL_HANDLE)
-		, physicalDevice(VK_NULL_HANDLE)
-		, instance(nullptr)
-	{
-	}
+    Device() noexcept
+        : handle(VK_NULL_HANDLE)
+        , physicalDevice(VK_NULL_HANDLE)
+        , instance(nullptr)
+    {
+    }
 
-	Device(VkDevice handle, VkPhysicalDevice physicalDevice, Instance *instance);
-	Device(const Device& other) = delete;
-	Device(Device&& other) noexcept
-		: handle(VK_NULL_HANDLE)
-		, physicalDevice(VK_NULL_HANDLE)
-		, instance(nullptr)
-	{
-		std::swap(handle, other.handle);
-		std::swap(physicalDevice, other.physicalDevice);
-		std::swap(instance, other.instance);
-		std::swap(functionPtrs, other.functionPtrs);
-	}
+    Device(VkDevice handle, VkPhysicalDevice physicalDevice, Instance *instance);
+    Device(const Device& other) = delete;
+    Device(Device&& other) noexcept
+        : handle(VK_NULL_HANDLE)
+        , physicalDevice(VK_NULL_HANDLE)
+        , instance(nullptr)
+    {
+        std::swap(handle, other.handle);
+        std::swap(physicalDevice, other.physicalDevice);
+        std::swap(instance, other.instance);
+        std::swap(functionPtrs, other.functionPtrs);
+    }
 
-	~Device();
+    ~Device();
 
-	Device& operator = (const Device& other) = delete;
-	Device& operator = (Device&& other) noexcept
-	{
-		std::swap(handle, other.handle);
-		std::swap(physicalDevice, other.physicalDevice);
-		std::swap(instance, other.instance);
-		std::swap(functionPtrs, other.functionPtrs);
-		return *this;
-	}
+    Device& operator = (const Device& other) = delete;
+    Device& operator = (Device&& other) noexcept
+    {
+        std::swap(handle, other.handle);
+        std::swap(physicalDevice, other.physicalDevice);
+        std::swap(instance, other.instance);
+        std::swap(functionPtrs, other.functionPtrs);
+        return *this;
+    }
 
-	VkDevice getDevice() noexcept
-	{
-		return handle;
-	}
-	VkDevice releaseDevice() noexcept
-	{
-		VkDevice tempHandle = handle;
-		handle = nullptr;
-		return tempHandle;
-	}
+    VkDevice getDevice() noexcept
+    {
+        return handle;
+    }
+    VkDevice releaseDevice() noexcept
+    {
+        VkDevice tempHandle = handle;
+        handle = nullptr;
+        return tempHandle;
+    }
 
-	VkPhysicalDevice getPhysicalDevice() noexcept
-	{
-		return physicalDevice;
-	}
+    VkPhysicalDevice getPhysicalDevice() noexcept
+    {
+        return physicalDevice;
+    }
 
-	Instance * getInstance() noexcept
-	{
-		return instance;
-	}
+    Instance * getInstance() noexcept
+    {
+        return instance;
+    }
 };
 
 } // namespace vkw
