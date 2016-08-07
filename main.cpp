@@ -15,14 +15,14 @@ void errorCallback(int error, const char *description)
 	cerr << error << ": " << description << endl;
 }
 
-VKAPI_ATTR VkBool32 VKAPI_CALL vulkanCallback(VkDebugReportFlagsEXT flags,
-											  VkDebugReportObjectTypeEXT objectType,
-											  uint64_t object,
-											  size_t location,
-											  int32_t messageCode,
-											  const char *pLayerPrefix,
+VKAPI_ATTR VkBool32 VKAPI_CALL vulkanCallback(VkDebugReportFlagsEXT,
+											  VkDebugReportObjectTypeEXT,
+											  uint64_t,
+											  size_t,
+											  int32_t,
+											  const char *,
 											  const char *pMessage,
-											  void *pUserData)
+											  void *)
 {
 	cerr << pMessage << endl;
 	return VK_FALSE;
