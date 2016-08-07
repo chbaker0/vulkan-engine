@@ -24,6 +24,47 @@ protected:
 		return (void *) glfwGetInstanceProcAddress(instance, pname);
 	}
 
+    void createInstance (const char **extensions, unsigned int extensionCount,
+						 const char **layers, unsigned int layerCount,
+						 vkw::Instance& instance) const
+	{
+		PFN_vkCreateInstance vkCreateInstance = (PFN_vkCreateInstance) glfwGetInstanceProcAddress(nullptr, "vkCreateInstance");
+		ASSERT_NE(vkCreateInstance, nullptr) << "Could not get pointer for vkCreateInstance";
+
+		std::uint32_t glfwExtensionCount;
+		const char **glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+		ASSERT_NE(glfwExtensions, nullptr) << "Could not get GLFW required extensions";
+
+		std::vector<const char *> allExtensions;
+
+		for (unsigned int i = 0; i < glfwExtensionCount; ++i)
+		{
+			allExtensions.push_back(glfwExtensions[i]);
+		}
+
+		for (unsigned int i = 0; i < extensionCount; ++i)
+		{
+			allExtensions.push_back(extensions[i]);
+		}
+
+		VkInstanceCreateInfo instanceCreateInfo =
+			{
+				VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,	// sType
+				nullptr,								// pNext
+				0,										// flags
+				nullptr,								// pApplicationInfo
+				(std::uint32_t) layerCount,				// enabledLayerCount
+				layers,									// ppEnabledLayerNames
+				(std::uint32_t) allExtensions.size(),	// enabledExtensionCount
+				allExtensions.data(),					// ppEnabledExtensionNames
+			};
+
+		VkInstance instanceHandle;
+		ASSERT_EQ(vkCreateInstance(&instanceCreateInfo, nullptr, &instanceHandle), VK_SUCCESS) << "Could not create Vulkan instance";
+
+	    instance = vkw::Instance(instanceHandle, getInstanceProcAddrWrapper);
+	}
+
 	virtual void SetUp ()
 	{
 		ASSERT_EQ(glfwInit(), GLFW_TRUE) << "Could not initialize GLFW";
@@ -40,36 +81,22 @@ protected:
 
 TEST_F(InstanceTest, InstanceCreation)
 {
-	PFN_vkCreateInstance vkCreateInstance = (PFN_vkCreateInstance) glfwGetInstanceProcAddress(nullptr, "vkCreateInstance");
-	ASSERT_NE(vkCreateInstance, nullptr) << "Could not get pointer for vkCreateInstance";
+	vkw::Instance instance;
+	ASSERT_NO_THROW(createInstance(nullptr, 0, nullptr, 0, instance));
+}
 
-	std::uint32_t glfwExtensionCount;
-	const char **glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-	ASSERT_NE(glfwExtensions, nullptr) << "Could not get GLFW required extensions";
-
-	std::vector<const char *> extensions;
-
-	for (unsigned int i = 0; i < glfwExtensionCount; ++i)
-	{
-		extensions.push_back(glfwExtensions[i]);
-	}
-
-	VkInstanceCreateInfo instanceCreateInfo =
+TEST_F(InstanceTest, InstanceCreationLayers)
+{
+	const char *extensions[] =
 		{
-			VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,	// sType
-			nullptr,								// pNext
-			0,										// flags
-			nullptr,								// pApplicationInfo
-		    0,										// enabledLayerCount
-		    nullptr,								// ppEnabledLayerNames
-		    (uint32_t) extensions.size(),			// enabledExtensionCount
-			extensions.data(),						// ppEnabledExtensionNames
+			"VK_EXT_debug_report"
 		};
 
-	VkInstance instanceHandle;
-	ASSERT_EQ(vkCreateInstance(&instanceCreateInfo, nullptr, &instanceHandle), VK_SUCCESS) << "Could not create Vulkan instance";
+	const char *layers[] =
+		{
+			"VK_LAYER_LUNARG_standard_validation"
+		};
 
 	vkw::Instance instance;
-
-	ASSERT_NO_THROW(instance = vkw::Instance(instanceHandle, getInstanceProcAddrWrapper));
+	ASSERT_NO_THROW(createInstance(extensions, 1, layers, 1, instance));
 }
