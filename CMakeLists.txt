@@ -11,6 +11,6 @@ add_executable(vulkan-engine
   $<TARGET_OBJECTS:vulkanwrapper>
   )
 
-target_link_libraries(vulkan-engine glfw SPIRV glslang)
+target_link_libraries(vulkan-engine glfw)
 set_property(TARGET vulkan-engine PROPERTY CXX_STANDARD 11)
 set_property(TARGET vulkan-engine PROPERTY CXX_STANDARD_REQUIRED ON)
