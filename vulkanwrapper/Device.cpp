@@ -135,13 +135,18 @@ Device::Device(VkDevice handleIn, VkPhysicalDevice physicalDeviceIn, Instance *i
 	LOAD_FUNCTION(vkCmdDispatch);
 	LOAD_FUNCTION(vkCmdDispatchIndirect);
 
-	
+
 #undef LOAD_FUNCTION
 }
 
 Device::~Device()
 {
-	functionPtrs.vkDestroyDevice(handle, nullptr);
+	if (handle != VK_NULL_HANDLE)
+	{
+		assert(functionPtrs.vkDestroyDevice != nullptr);
+
+		functionPtrs.vkDestroyDevice(handle, nullptr);
+	}
 }
 
 } // namespace vkw

@@ -8,7 +8,7 @@ namespace vkw
 
 Instance::Instance(VkInstance handle_in, GetProcAddrPtr getProcAddr)
 	: handle(handle_in)
-{	
+{
 #define LOAD_FUNCTION(X) functionPtrs.X = (PFN_##X) getProcAddr(handle, #X); assert(functionPtrs.X != nullptr)
 
 	LOAD_FUNCTION(vkGetInstanceProcAddr);
@@ -19,13 +19,18 @@ Instance::Instance(VkInstance handle_in, GetProcAddrPtr getProcAddr)
 	LOAD_FUNCTION(vkGetPhysicalDeviceFeatures);
 	LOAD_FUNCTION(vkDestroyInstance);
 	LOAD_FUNCTION(vkCreateDevice);
-	
+
 #undef LOAD_FUNCTION
 }
 
 Instance::~Instance()
 {
-	functionPtrs.vkDestroyInstance(handle, nullptr);
+	if (handle != VK_NULL_HANDLE)
+	{
+		assert(functionPtrs.vkDestroyInstance != nullptr);
+
+		functionPtrs.vkDestroyInstance(handle, nullptr);
+	}
 }
 
 std::vector<VkPhysicalDevice> Instance::enumeratePhysicalDevices()
