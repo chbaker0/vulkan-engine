@@ -6,7 +6,10 @@
 namespace vkw
 {
 
-Device::Device(VkDevice handle, VkPhysicalDevice physicalDevice, Instance *instance)
+Device::Device(VkDevice handleIn, VkPhysicalDevice physicalDeviceIn, Instance *instanceIn)
+	: handle(handleIn)
+	, physicalDevice(physicalDeviceIn)
+	, instance(instanceIn)
 {
 #define LOAD_FUNCTION(X) functionPtrs.X = (PFN_##X) instance->functionPtrs.vkGetDeviceProcAddr(handle, #X); assert(functionPtrs.X != nullptr)
 
