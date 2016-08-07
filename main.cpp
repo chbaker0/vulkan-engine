@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cassert>
+#include <cstdint>
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
@@ -32,40 +33,36 @@ void * getInstanceProcAddrWrapper(VkInstance instance, const char *pname)
 	return (void *) glfwGetInstanceProcAddress(instance, pname);
 }
 
-int main()
+namespace
 {
-	glfwSetErrorCallback(errorCallback);
-	
-	if(glfwInit() == GLFW_FALSE)
-	{
-		cerr << "Could not initialize GLFW.\n";
-		return 1;
-	}
-	
-	if(glfwVulkanSupported() == GLFW_FALSE)
-	{
-		cerr << "Vulkan not supported.\n";
-		return 1;
-	}
 
+const char *extensions[] =
+{
+	"VK_EXT_debug_report"
+};
+
+const char *layers[] =
+{
+	"VK_LAYER_LUNARG_standard_validation"
+};
+
+} // anonymous
+
+vkw::Instance createInstance ()
+{
 	PFN_vkCreateInstance vkCreateInstance = (PFN_vkCreateInstance) glfwGetInstanceProcAddress(nullptr, "vkCreateInstance");
 
 	std::uint32_t extensionCount;
 	const char **glfwExtensions = glfwGetRequiredInstanceExtensions(&extensionCount);
 
-	std::vector<const char*> extensions(extensionCount + 1);
+	std::vector<const char*> extensions(extensionCount);
 
-	for(unsigned int i = 0; i < extensionCount; ++i)
+	for (unsigned int i = 0; i < extensionCount; ++i)
 	{
 		extensions[i] = glfwExtensions[i];
 	}
 
-	extensions[extensionCount] = "VK_EXT_debug_report";
-
-	const char *layers[] =
-		{
-			"VK_LAYER_LUNARG_standard_validation"
-		};
+	extensions.push_back("VK_EXT_debug_report");
 
 	VkInstanceCreateInfo instanceCreateInfo =
 		{
@@ -75,7 +72,7 @@ int main()
 			nullptr,								// pApplicationInfo
 		    sizeof(layers) / sizeof (const char *),	// enabledLayerCount
 		    layers,									// ppEnabledLayerNames
-		    extensions.size(),						// enabledExtensionCount
+		    (uint32_t) extensions.size(),			// enabledExtensionCount
 			extensions.data(),						// ppEnabledExtensionNames
 		};
 
@@ -83,11 +80,39 @@ int main()
 	if(vkCreateInstance(&instanceCreateInfo, nullptr, &instanceHandle) != VK_SUCCESS)
 	{
 		cerr << "Could not create Vulkan instance.\n";
-		return 1;
+	    throw std::runtime_error("Could not create vulkan instance.");
 	}
 
-	PFN_vkCreateDebugReportCallbackEXT vkCreateDebugReportCallbackEXT = (PFN_vkCreateDebugReportCallbackEXT) glfwGetInstanceProcAddress(instanceHandle, "vkCreateDebugReportCallbackEXT");
-	PFN_vkDestroyDebugReportCallbackEXT vkDestroyDebugReportCallbackEXT = (PFN_vkDestroyDebugReportCallbackEXT) glfwGetInstanceProcAddress(instanceHandle, "vkDestroyDebugReportCallbackEXT");
+	vkw::Instance instance(instanceHandle, getInstanceProcAddrWrapper);
+
+	return instance;
+}
+
+vkw::Device createDevice (vkw::Instance& instance)
+{
+	
+}
+
+bool run ()
+{
+	glfwSetErrorCallback(errorCallback);
+	
+	if(glfwInit() == GLFW_FALSE)
+	{
+		cerr << "Could not initialize GLFW.\n";
+		return false;
+	}
+	
+	if(glfwVulkanSupported() == GLFW_FALSE)
+	{
+		cerr << "Vulkan not supported.\n";
+		return false;
+	}
+
+	vkw::Instance instance = createInstance();
+
+	PFN_vkCreateDebugReportCallbackEXT vkCreateDebugReportCallbackEXT = (PFN_vkCreateDebugReportCallbackEXT) glfwGetInstanceProcAddress(instance.getInstance(), "vkCreateDebugReportCallbackEXT");
+	PFN_vkDestroyDebugReportCallbackEXT vkDestroyDebugReportCallbackEXT = (PFN_vkDestroyDebugReportCallbackEXT) glfwGetInstanceProcAddress(instance.getInstance(), "vkDestroyDebugReportCallbackEXT");
 
 	assert(vkCreateDebugReportCallbackEXT != nullptr);
 	assert(vkDestroyDebugReportCallbackEXT != nullptr);
@@ -100,10 +125,8 @@ int main()
 	callbackCreateInfo.pUserData = nullptr;
 
 	VkDebugReportCallbackEXT callback;
-	vkCreateDebugReportCallbackEXT(instanceHandle, &callbackCreateInfo, nullptr, &callback);
-
-	vkw::Instance instance(instanceHandle, getInstanceProcAddrWrapper);
-
+	vkCreateDebugReportCallbackEXT(instance.getInstance(), &callbackCreateInfo, nullptr, &callback);
+	
 	auto physicalDevices = instance.enumeratePhysicalDevices();
 	cout << physicalDevices.size() << endl;
 
@@ -142,12 +165,36 @@ int main()
 			&queueCreateInfo, // pQueueCreateInfos
 		    0, // enabledLayerCount
 		    nullptr, // ppEnabledLayerNames
-			extensions.size(), // enabledExtensionsCount
-			extensions.data(), // ppEnabledExtensionNames
+			0, // ppEnabledExtensionNames
+		    nullptr, // enabledExtensionsCount
 			&features // pEnabledFeatures
 		};
 
 	vkw::Device device = instance.createDevice(physicalDevices[0], deviceCreateInfo);
 
-	vkDestroyDebugReportCallbackEXT(instanceHandle, callback, nullptr);
+	vkDestroyDebugReportCallbackEXT(instance.getInstance(), callback, nullptr);
+
+	return true;
+}
+
+int main ()
+{
+	try
+	{
+		return run() ? 0 : 1;
+	}
+	catch (const exception& e)
+	{
+		cerr << e.what() << endl;
+
+		return 1;
+	}
+	catch (...)
+	{
+		cerr << "Unknown exception" << endl;
+
+		return 1;
+	}
+
+	return 0;
 }
