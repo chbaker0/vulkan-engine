@@ -132,7 +132,9 @@ public:
      * \brief Create Device
      *
      * Uses a physical device handle and VkDeviceCreateInfo structure to internally call
-     * vkCreateInstance, and then creates Device object to wrap new Vulkan device.
+     * vkCreateInstance, and then creates Device object to wrap new Vulkan device. Since
+     * Device holds pointer to the Instance it is created from, this Instance must last
+     * at least as long as the created Device.
      */
     Device createDevice(VkPhysicalDevice phyDev, const VkDeviceCreateInfo& createInfo);
 };
