@@ -2095,8 +2095,6 @@ PERL_PATH              = /usr/bin/perl
 # Configuration options related to the dot tool
 #---------------------------------------------------------------------------
 
-HAVE_DOT = @HAVE_DOT@
-
 # If the CLASS_DIAGRAMS tag is set to YES, doxygen will generate a class diagram
 # (in HTML and LaTeX) for classes with base or super classes. Setting the tag to
 # NO turns the diagrams off. Note that this option also works with HAVE_DOT
@@ -2135,7 +2133,7 @@ HIDE_UNDOC_RELATIONS   = YES
 # set to NO
 # The default value is: NO.
 
-HAVE_DOT               = NO
+HAVE_DOT               = @HAVE_DOT@
 
 # The DOT_NUM_THREADS specifies the number of dot invocations doxygen is allowed
 # to run in parallel. When set to 0 doxygen will base this on the number of
