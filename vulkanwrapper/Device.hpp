@@ -1,3 +1,7 @@
+/**
+ * \brief Wrapper around Vulkan device functions
+ */
+
 #ifndef VULKANWRAPPER_DEVICE_HPP
 #define VULKANWRAPPER_DEVICE_HPP
 
@@ -12,11 +16,16 @@
 namespace vkw
 {
 
+/**
+ * \brief Exception for device-level failures
+ *
+ * Represents a failure that occurs inside a Device.
+ */
 class DeviceException : public std::exception
 {
 protected:
-    VkResult errorResult;
-    std::string details;
+    VkResult errorResult; //!< \internal VkResult from failing Vulkan function
+    std::string details; //!< \internal Human readable string for error
 
 public:
     DeviceException(VkResult errorResult_in, std::string details_in) noexcept
@@ -27,6 +36,9 @@ public:
     DeviceException(const DeviceException& other) = delete;
     DeviceException(DeviceException&& other) noexcept = default;
 
+    /**
+     * \brief Get result from failing Vulkan function
+     */
     VkResult getVkResult() const noexcept
     {
         return errorResult;
@@ -40,12 +52,17 @@ public:
 
 class Instance;
 
+/**
+ * \brief Wrapper around VkDevice
+ *
+ * Wraps VkDevice and all device-level functions; holds all device-level function pointers.
+ */
 class Device
 {
 protected:
-    VkDevice handle;
-    VkPhysicalDevice physicalDevice;
-    Instance *instance;
+    VkDevice handle; //!< \internal Wrapped Vulkan handle
+    VkPhysicalDevice physicalDevice; //!< \internal Physical device this logical device was created from
+    Instance *instance; //!< \internal Vulkan instance this logical device belongs to
 
 public:
     struct FunctionPtrs
@@ -62,6 +79,13 @@ public:
     {
     }
 
+    /**
+     * Copies VkDevice and VkPhysicalDevice handles and populates function pointer table.
+     *
+     * \param handle VkDevice handle to be wrapped; takes ownership
+     * \param physicalDevice VkPhysicalDevice handle that the logical device was created from
+     * \param instance Pointer to parent Instance; functionPtrs is populated using this.
+     */
     Device(VkDevice handle, VkPhysicalDevice physicalDevice, Instance *instance);
     Device(const Device& other) = delete;
     Device(Device&& other) noexcept
@@ -75,6 +99,9 @@ public:
         std::swap(functionPtrs, other.functionPtrs);
     }
 
+    /**
+     * \brief Destroys wrapped VkDevice.
+     */
     ~Device();
 
     Device& operator = (const Device& other) = delete;
@@ -87,10 +114,17 @@ public:
         return *this;
     }
 
+    /**
+     * \brief Get copy of wrapped handle; doesn't give up ownership.
+     */
     VkDevice getDevice() noexcept
     {
         return handle;
     }
+
+    /**
+     * \brief Get wrapped handle and take ownership of it.
+     */
     VkDevice releaseDevice() noexcept
     {
         VkDevice tempHandle = handle;
@@ -98,11 +132,17 @@ public:
         return tempHandle;
     }
 
+    /**
+     * \brief Get handle to physical device that this logical device was created from.
+     */
     VkPhysicalDevice getPhysicalDevice() noexcept
     {
         return physicalDevice;
     }
 
+    /**
+     * \brief Get parent Instance.
+     */
     Instance * getInstance() noexcept
     {
         return instance;

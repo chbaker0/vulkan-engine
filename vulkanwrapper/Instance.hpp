@@ -1,3 +1,7 @@
+/**
+ * \brief Wrapper around Vulkan instance functions
+ */
+
 #ifndef VULKANWRAPPER_INSTANCE_HPP
 #define VULKANWRAPPER_INSTANCE_HPP
 
@@ -12,11 +16,16 @@
 namespace vkw
 {
 
+/**
+ * \brief Exception for instance-level failures
+ *
+ * Represents a failure that occurs inside an Instance.
+ */
 class InstanceException : public std::exception
 {
 protected:
-    VkResult errorResult;
-    std::string details;
+    VkResult errorResult; //!< \internal VkResult from failing Vulkan function
+    std::string details; //!< \internal Human readable string for error
 
 public:
     InstanceException(VkResult errorResult_in, std::string details_in) noexcept
@@ -27,6 +36,9 @@ public:
     InstanceException(const InstanceException& other) = default;
     InstanceException(InstanceException&& other) noexcept = default;
 
+    /**
+     * \brief Get result from failing Vulkan function
+     */
     VkResult getVkResult() const noexcept
     {
         return errorResult;
@@ -40,10 +52,15 @@ public:
 
 class Device;
 
+/**
+ * \brief Wrapper around VkInstance
+ *
+ * Wraps VkInstance and all instance-level functions; holds all instance-level function pointers.
+ */
 class Instance
 {
 protected:
-    VkInstance handle;
+    VkInstance handle; //!< \internal Wrapped Vulkan handle
 
 public:
     struct FunctionPtrs
@@ -60,6 +77,12 @@ public:
     {
     }
 
+    /**
+     * Copies VkInstance handle and populates function pointer table.
+     *
+     * \param handle_in VkInstance handle to be wrapped; takes ownership
+     * \param getProcAddr Pointer to function for obtaining Vulkan global and instance-level functions
+     */
     Instance(VkInstance handle_in, GetProcAddrPtr getProcAddr);
     Instance(const Instance& other) = delete;
     Instance(Instance&& other) noexcept
@@ -69,6 +92,9 @@ public:
         std::swap(functionPtrs, other.functionPtrs);
     }
 
+    /**
+     * \brief Destroys wrapped VkInstance.
+     */
     ~Instance();
 
     Instance& operator = (const Instance& other) = delete;
@@ -79,10 +105,17 @@ public:
         return *this;
     }
 
+    /**
+     * \brief Get copy of wrapped handle; doesn't give up ownership.
+     */
     VkInstance getInstance() noexcept
     {
         return handle;
     }
+
+    /**
+     * \brief Get wrapped handle and take ownership of it.
+     */
     VkInstance releaseInstance() noexcept
     {
         VkInstance tempHandle = handle;
@@ -94,6 +127,15 @@ public:
     VkPhysicalDeviceProperties getPhysicalDeviceProperties(VkPhysicalDevice physicalDevice) noexcept;
     std::vector<VkQueueFamilyProperties> getPhysicalDeviceQueueFamilyProperties(VkPhysicalDevice physicalDevice);
     VkPhysicalDeviceFeatures getPhysicalDeviceFeatures(VkPhysicalDevice physicalDevice) noexcept;
+
+    /**
+     * \brief Create Device
+     *
+     * Uses a physical device handle and VkDeviceCreateInfo structure to internally call
+     * vkCreateInstance, and then creates Device object to wrap new Vulkan device. Since
+     * Device holds pointer to the Instance it is created from, this Instance must last
+     * at least as long as the created Device.
+     */
     Device createDevice(VkPhysicalDevice phyDev, const VkDeviceCreateInfo& createInfo);
 };
 
