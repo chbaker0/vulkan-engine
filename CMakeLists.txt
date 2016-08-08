@@ -23,6 +23,13 @@ add_subdirectory(tests)
 find_package(Doxygen)
 
 if(DOXYGEN_FOUND)
+  find_program(DOXYGEN_DOT dot)
+  if(DOXYGEN_DOT EQUAL "DOXYGEN_DOT-NOTFOUND")
+    set(HAVE_DOT "NO")
+  else()
+    set(HAVE_DOT "YES")
+  endif()
+
   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in
     ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
   add_custom_target(doc ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
