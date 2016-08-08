@@ -129,7 +129,50 @@ protected:
 
 TEST_F(DeviceTest, DeviceCreation)
 {
+    std::vector<VkPhysicalDevice> physicalDevices;
+    ASSERT_NO_THROW(physicalDevices = instance.enumeratePhysicalDevices());
 
+    for (const VkPhysicalDevice physDev : physicalDevices)
+    {
+        const VkPhysicalDeviceFeatures features = instance.getPhysicalDeviceFeatures(physDev);
+
+        const std::vector<VkQueueFamilyProperties> queueFamilyProperties = instance.getPhysicalDeviceQueueFamilyProperties(physDev);
+
+        std::vector<VkDeviceQueueCreateInfo> queueCreateInfos(queueFamilyProperties.size());
+
+        for (unsigned int queueFamilyNdx = 0; queueFamilyNdx < queueFamilyProperties.size(); ++queueFamilyNdx)
+        {
+            const float queuePriority = 1.0f;
+
+            queueCreateInfos[queueFamilyNdx] =
+                VkDeviceQueueCreateInfo
+                {
+                    VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO, // sType
+                    nullptr,                                    // pNext
+                    0,                                          // flags
+                    queueFamilyNdx,                             // queueFamilyIndex
+                    1,                                          // queueCount
+                    &queuePriority                              // pQueuePriorities
+                };
+        }
+
+        VkDeviceCreateInfo devCreateInfo =
+        {
+			VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,    // sType
+			nullptr,                                 // pNext
+			0,                                       // flags
+			(std::uint32_t) queueCreateInfos.size(), // queueCreateInfoCount
+			queueCreateInfos.data(),                 // pQueueCreateInfos
+		    0,                                       // enabledLayerCount
+		    nullptr,                                 // ppEnabledLayerNames
+			0,                                       // ppEnabledExtensionNames
+		    nullptr,                                 // enabledExtensionsCount
+			&features                                // pEnabledFeatures
+        };
+
+        vkw::Device device;
+        ASSERT_NO_THROW(device = instance.createDevice(physDev, devCreateInfo));
+    }
 }
 
 } // anonymous
