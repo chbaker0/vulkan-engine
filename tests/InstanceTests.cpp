@@ -133,3 +133,42 @@ TEST_F(InstanceTest, InstanceCreationLayers)
 
     vkDestroyDebugReportCallbackEXT(instance.getInstance(), callback, nullptr);
 }
+
+TEST_F(InstanceTest, InstanceQueries)
+{
+    const char *extensions[] =
+        {
+            "VK_EXT_debug_report"
+        };
+
+    const char *layers[] =
+        {
+            "VK_LAYER_LUNARG_standard_validation"
+        };
+
+    vkw::Instance instance;
+    ASSERT_NO_THROW(createInstance(extensions, 1, layers, 1, instance));
+
+    auto vkCreateDebugReportCallbackEXT
+        = (PFN_vkCreateDebugReportCallbackEXT) glfwGetInstanceProcAddress(instance.getInstance(), "vkCreateDebugReportCallbackEXT");
+    ASSERT_NE(vkCreateDebugReportCallbackEXT, nullptr) << "Could not get pointer for vkCreateDebugReportCallbackEXT";
+
+    auto vkDestroyDebugReportCallbackEXT
+        = (PFN_vkDestroyDebugReportCallbackEXT) glfwGetInstanceProcAddress(instance.getInstance(), "vkDestroyDebugReportCallbackEXT");
+    ASSERT_NE(vkDestroyDebugReportCallbackEXT, nullptr) << "Could not get pointer for vkDestroyDebugReportCallbackEXT";
+
+    VkDebugReportCallbackCreateInfoEXT callbackCreateInfo;
+    callbackCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
+    callbackCreateInfo.pNext = nullptr;
+    callbackCreateInfo.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT | VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT;
+    callbackCreateInfo.pfnCallback = &vulkanCallback;
+    callbackCreateInfo.pUserData = nullptr;
+
+    VkDebugReportCallbackEXT callback;
+    ASSERT_EQ(vkCreateDebugReportCallbackEXT(instance.getInstance(), &callbackCreateInfo, nullptr, &callback), VK_SUCCESS) << "Could not create debug report callback object";
+
+    std::vector<VkPhysicalDevice> physicalDevices;
+    ASSERT_NO_THROW(physicalDevices = instance.enumeratePhysicalDevices());
+
+    vkDestroyDebugReportCallbackEXT(instance.getInstance(), callback, nullptr);
+}
