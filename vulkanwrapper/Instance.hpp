@@ -106,9 +106,9 @@ public:
     }
 
     /**
-     * \brief Get copy of wrapped handle; doesn't give up ownership.
+     * \brief Get wrapped handle; doesn't give up ownership.
      */
-    VkInstance getInstance() noexcept
+    const VkInstance& getInstance() const noexcept
     {
         return handle;
     }

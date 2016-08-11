@@ -115,9 +115,9 @@ public:
     }
 
     /**
-     * \brief Get copy of wrapped handle; doesn't give up ownership.
+     * \brief Get wrapped handle; doesn't give up ownership.
      */
-    VkDevice getDevice() noexcept
+    const VkDevice& getDevice() const noexcept
     {
         return handle;
     }
@@ -135,7 +135,7 @@ public:
     /**
      * \brief Get handle to physical device that this logical device was created from.
      */
-    VkPhysicalDevice getPhysicalDevice() noexcept
+    const VkPhysicalDevice& getPhysicalDevice() const noexcept
     {
         return physicalDevice;
     }
