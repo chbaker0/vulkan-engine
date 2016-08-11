@@ -95,7 +95,7 @@ protected:
 TEST_F(InstanceTest, InstanceCreation)
 {
     vkw::Instance instance;
-    ASSERT_NO_THROW(createInstance(nullptr, 0, nullptr, 0, instance));
+    ASSERT_NO_THROW(ASSERT_NO_FATAL_FAILURE(createInstance(nullptr, 0, nullptr, 0, instance)));
 }
 
 TEST_F(InstanceTest, InstanceCreationLayers)
@@ -111,7 +111,7 @@ TEST_F(InstanceTest, InstanceCreationLayers)
         };
 
     vkw::Instance instance;
-    ASSERT_NO_THROW(createInstance(extensions, 1, layers, 1, instance));
+    ASSERT_NO_THROW(ASSERT_NO_FATAL_FAILURE(createInstance(extensions, 1, layers, 1, instance)));
 
     auto vkCreateDebugReportCallbackEXT
         = (PFN_vkCreateDebugReportCallbackEXT) glfwGetInstanceProcAddress(instance.getInstance(), "vkCreateDebugReportCallbackEXT");
@@ -147,7 +147,7 @@ TEST_F(InstanceTest, InstanceQueries)
         };
 
     vkw::Instance instance;
-    ASSERT_NO_THROW(createInstance(extensions, 1, layers, 1, instance));
+    ASSERT_NO_THROW(ASSERT_NO_FATAL_FAILURE(createInstance(extensions, 1, layers, 1, instance)));
 
     auto vkCreateDebugReportCallbackEXT
         = (PFN_vkCreateDebugReportCallbackEXT) glfwGetInstanceProcAddress(instance.getInstance(), "vkCreateDebugReportCallbackEXT");

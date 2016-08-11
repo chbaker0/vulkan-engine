@@ -92,7 +92,7 @@ protected:
         ASSERT_EQ(glfwInit(), GLFW_TRUE) << "Could not initialize GLFW";
         ASSERT_EQ(glfwVulkanSupported(), GLFW_TRUE) << "Vulkan is not supported";
 
-        ASSERT_NO_THROW(createInstance());
+        ASSERT_NO_THROW(ASSERT_NO_FATAL_FAILURE(createInstance()));
 
         auto vkCreateDebugReportCallbackEXT
             = (PFN_vkCreateDebugReportCallbackEXT) glfwGetInstanceProcAddress(instance.getInstance(), "vkCreateDebugReportCallbackEXT");
