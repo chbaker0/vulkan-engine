@@ -147,6 +147,11 @@ public:
     {
         return instance;
     }
+
+    const Instance * getInstance() const noexcept
+    {
+        return instance;
+    }
 };
 
 } // namespace vkw
