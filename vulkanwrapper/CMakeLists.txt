@@ -5,6 +5,7 @@ add_library(vulkanwrapper OBJECT
   Device.cpp
   Device.hpp
   DeviceFunctionList.h
+  DeviceObject.hpp
   )
 
 set_property(TARGET vulkanwrapper PROPERTY CXX_STANDARD 11)
