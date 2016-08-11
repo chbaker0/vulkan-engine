@@ -25,7 +25,7 @@ Instance::Instance(VkInstance handle_in, GetProcAddrPtr getProcAddr)
 
 Instance::~Instance()
 {
-    if (handle != VK_NULL_HANDLE)
+    if (handle != nullptr)
     {
         assert(functionPtrs.vkDestroyInstance != nullptr);
 

@@ -73,8 +73,8 @@ public:
     FunctionPtrs functionPtrs;
 
     Device() noexcept
-        : handle(VK_NULL_HANDLE)
-        , physicalDevice(VK_NULL_HANDLE)
+        : handle(nullptr)
+        , physicalDevice(nullptr)
         , instance(nullptr)
     {
     }
@@ -89,8 +89,8 @@ public:
     Device(VkDevice handle, VkPhysicalDevice physicalDevice, Instance *instance);
     Device(const Device& other) = delete;
     Device(Device&& other) noexcept
-        : handle(VK_NULL_HANDLE)
-        , physicalDevice(VK_NULL_HANDLE)
+        : handle(nullptr)
+        , physicalDevice(nullptr)
         , instance(nullptr)
     {
         std::swap(handle, other.handle);

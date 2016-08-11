@@ -141,7 +141,7 @@ Device::Device(VkDevice handleIn, VkPhysicalDevice physicalDeviceIn, Instance *i
 
 Device::~Device()
 {
-    if (handle != VK_NULL_HANDLE)
+    if (handle != nullptr)
     {
         assert(functionPtrs.vkDestroyDevice != nullptr);
 

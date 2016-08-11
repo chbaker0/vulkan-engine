@@ -73,7 +73,7 @@ public:
     typedef void * (*GetProcAddrPtr)(VkInstance, const char *);
 
     Instance() noexcept
-        : handle(VK_NULL_HANDLE)
+        : handle(nullptr)
     {
     }
 
@@ -86,7 +86,7 @@ public:
     Instance(VkInstance handle_in, GetProcAddrPtr getProcAddr);
     Instance(const Instance& other) = delete;
     Instance(Instance&& other) noexcept
-        : handle(VK_NULL_HANDLE)
+        : handle(nullptr)
     {
         std::swap(handle, other.handle);
         std::swap(functionPtrs, other.functionPtrs);
