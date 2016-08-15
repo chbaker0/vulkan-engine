@@ -5,7 +5,7 @@
 #ifndef VULKANWRAPPER_INSTANCE_HPP
 #define VULKANWRAPPER_INSTANCE_HPP
 
-#include "InstanceFunctionNames.h"
+#include "InstanceFunctionList.h"
 
 #include <exception>
 #include <string>
