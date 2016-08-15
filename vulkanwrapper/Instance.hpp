@@ -67,7 +67,7 @@ protected:
 public:
     struct FunctionPtrs
     {
-#define X(type, name) type name;
+#define X(name) PFN_##name name;
         VKW_INSTANCE_FUNCTION_LIST
 #undef X
     };

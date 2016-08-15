@@ -9,7 +9,7 @@ namespace vkw
 Instance::Instance(VkInstance handle_in, GetProcAddrPtr getProcAddr)
     : handle(handle_in)
 {
-#define X(type, name) functionPtrs.name = (type) getProcAddr(handle, #name); assert(functionPtrs.name != nullptr);
+#define X(name) functionPtrs.name = (PFN_##name) getProcAddr(handle, #name); assert(functionPtrs.name != nullptr);
 
     VKW_INSTANCE_FUNCTION_LIST
 
