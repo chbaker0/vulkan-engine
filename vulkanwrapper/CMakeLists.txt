@@ -1,6 +1,7 @@
 add_library(vulkanwrapper OBJECT
   Instance.cpp
   Instance.hpp
+  InstanceFunctionNames.h
   Device.cpp
   Device.hpp
   )
