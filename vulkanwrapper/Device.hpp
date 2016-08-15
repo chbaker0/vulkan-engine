@@ -5,6 +5,8 @@
 #ifndef VULKANWRAPPER_DEVICE_HPP
 #define VULKANWRAPPER_DEVICE_HPP
 
+#include "DeviceFunctionList.h"
+
 #include <exception>
 #include <string>
 #include <utility>
@@ -67,14 +69,16 @@ protected:
 public:
     struct FunctionPtrs
     {
-        #include "DeviceFunctionPtrs.inl"
+#define X(name) PFN_##name name;
+        VKW_DEVICE_FUNCTION_LIST
+#undef X
     };
 
     FunctionPtrs functionPtrs;
 
     Device() noexcept
-        : handle(VK_NULL_HANDLE)
-        , physicalDevice(VK_NULL_HANDLE)
+        : handle(nullptr)
+        , physicalDevice(nullptr)
         , instance(nullptr)
     {
     }
@@ -89,8 +93,8 @@ public:
     Device(VkDevice handle, VkPhysicalDevice physicalDevice, Instance *instance);
     Device(const Device& other) = delete;
     Device(Device&& other) noexcept
-        : handle(VK_NULL_HANDLE)
-        , physicalDevice(VK_NULL_HANDLE)
+        : handle(nullptr)
+        , physicalDevice(nullptr)
         , instance(nullptr)
     {
         std::swap(handle, other.handle);
@@ -115,9 +119,9 @@ public:
     }
 
     /**
-     * \brief Get copy of wrapped handle; doesn't give up ownership.
+     * \brief Get wrapped handle; doesn't give up ownership.
      */
-    VkDevice getDevice() noexcept
+    const VkDevice& getDevice() const noexcept
     {
         return handle;
     }
@@ -135,7 +139,7 @@ public:
     /**
      * \brief Get handle to physical device that this logical device was created from.
      */
-    VkPhysicalDevice getPhysicalDevice() noexcept
+    const VkPhysicalDevice& getPhysicalDevice() const noexcept
     {
         return physicalDevice;
     }
@@ -144,6 +148,11 @@ public:
      * \brief Get parent Instance.
      */
     Instance * getInstance() noexcept
+    {
+        return instance;
+    }
+
+    const Instance * getInstance() const noexcept
     {
         return instance;
     }

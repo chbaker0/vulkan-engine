@@ -9,23 +9,16 @@ namespace vkw
 Instance::Instance(VkInstance handle_in, GetProcAddrPtr getProcAddr)
     : handle(handle_in)
 {
-#define LOAD_FUNCTION(X) functionPtrs.X = (PFN_##X) getProcAddr(handle, #X); assert(functionPtrs.X != nullptr)
+#define X(name) functionPtrs.name = (PFN_##name) getProcAddr(handle, #name); assert(functionPtrs.name != nullptr);
 
-    LOAD_FUNCTION(vkGetInstanceProcAddr);
-    LOAD_FUNCTION(vkGetDeviceProcAddr);
-    LOAD_FUNCTION(vkEnumeratePhysicalDevices);
-    LOAD_FUNCTION(vkGetPhysicalDeviceProperties);
-    LOAD_FUNCTION(vkGetPhysicalDeviceQueueFamilyProperties);
-    LOAD_FUNCTION(vkGetPhysicalDeviceFeatures);
-    LOAD_FUNCTION(vkDestroyInstance);
-    LOAD_FUNCTION(vkCreateDevice);
+    VKW_INSTANCE_FUNCTION_LIST
 
-#undef LOAD_FUNCTION
+#undef X
 }
 
 Instance::~Instance()
 {
-    if (handle != VK_NULL_HANDLE)
+    if (handle != nullptr)
     {
         assert(functionPtrs.vkDestroyInstance != nullptr);
 

@@ -5,6 +5,8 @@
 #ifndef VULKANWRAPPER_INSTANCE_HPP
 #define VULKANWRAPPER_INSTANCE_HPP
 
+#include "InstanceFunctionList.h"
+
 #include <exception>
 #include <string>
 #include <utility>
@@ -65,7 +67,9 @@ protected:
 public:
     struct FunctionPtrs
     {
-        #include "InstanceFunctionPtrs.inl"
+#define X(name) PFN_##name name;
+        VKW_INSTANCE_FUNCTION_LIST
+#undef X
     };
 
     FunctionPtrs functionPtrs;
@@ -73,7 +77,7 @@ public:
     typedef void * (*GetProcAddrPtr)(VkInstance, const char *);
 
     Instance() noexcept
-        : handle(VK_NULL_HANDLE)
+        : handle(nullptr)
     {
     }
 
@@ -86,7 +90,7 @@ public:
     Instance(VkInstance handle_in, GetProcAddrPtr getProcAddr);
     Instance(const Instance& other) = delete;
     Instance(Instance&& other) noexcept
-        : handle(VK_NULL_HANDLE)
+        : handle(nullptr)
     {
         std::swap(handle, other.handle);
         std::swap(functionPtrs, other.functionPtrs);
@@ -106,9 +110,9 @@ public:
     }
 
     /**
-     * \brief Get copy of wrapped handle; doesn't give up ownership.
+     * \brief Get wrapped handle; doesn't give up ownership.
      */
-    VkInstance getInstance() noexcept
+    const VkInstance& getInstance() const noexcept
     {
         return handle;
     }
