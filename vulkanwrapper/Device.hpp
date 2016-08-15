@@ -5,6 +5,8 @@
 #ifndef VULKANWRAPPER_DEVICE_HPP
 #define VULKANWRAPPER_DEVICE_HPP
 
+#include "DeviceFunctionList.h"
+
 #include <exception>
 #include <string>
 #include <utility>
@@ -67,7 +69,9 @@ protected:
 public:
     struct FunctionPtrs
     {
-        #include "DeviceFunctionPtrs.inl"
+#define X(name) PFN_##name name;
+        VKW_DEVICE_FUNCTION_LIST
+#undef X
     };
 
     FunctionPtrs functionPtrs;

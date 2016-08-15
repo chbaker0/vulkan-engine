@@ -5,6 +5,8 @@
 #ifndef VULKANWRAPPER_INSTANCE_HPP
 #define VULKANWRAPPER_INSTANCE_HPP
 
+#include "InstanceFunctionList.h"
+
 #include <exception>
 #include <string>
 #include <utility>
@@ -65,7 +67,9 @@ protected:
 public:
     struct FunctionPtrs
     {
-        #include "InstanceFunctionPtrs.inl"
+#define X(name) PFN_##name name;
+        VKW_INSTANCE_FUNCTION_LIST
+#undef X
     };
 
     FunctionPtrs functionPtrs;
