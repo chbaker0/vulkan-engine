@@ -78,4 +78,20 @@ TEST_F (CommandPoolTest, CommandPoolCreation)
     }
 }
 
+TEST_F (CommandPoolTest, CommandPoolCreationFail)
+{
+    PFN_vkCreateCommandPool createCommandPool =
+        [](VkDevice, const VkCommandPoolCreateInfo*, const VkAllocationCallbacks*, VkCommandPool*) -> VkResult
+        {
+            return VK_ERROR_DEVICE_LOST;
+        };
+
+    deviceProcMock.setProcAddr("vkCreateCommandPool", (PFN_vkVoidFunction) createCommandPool);
+
+    ASSERT_NO_THROW(createObjects());
+
+    VkCommandPoolCreateInfo createInfo = {};
+    ASSERT_THROW(device.createCommandPool(createInfo), vkw::DeviceException);
+}
+
 } // anonymous
