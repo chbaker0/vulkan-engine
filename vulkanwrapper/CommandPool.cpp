@@ -7,7 +7,7 @@ namespace vkw
 
 CommandPool::CommandPool(VkCommandPool handle, Device *device_in)
     : device(device_in)
-    , object(device, handle, device.functionPtrs.vkDestroyCommandPool)
+    , object(device->getDevice(), handle, device->functionPtrs.vkDestroyCommandPool)
 {
 }
 
@@ -20,7 +20,7 @@ void CommandPool::reset(bool releaseResources)
         flags |= VK_COMMAND_POOL_RESET_RELEASE_RESOURCES_BIT;
     }
 
-    VkResult result = device.functionPtrs.vkResetCommandPool(device.getDevice(), *object, flags);
+    VkResult result = device->functionPtrs.vkResetCommandPool(device->getDevice(), *object, flags);
 
     if (result != VK_SUCCESS)
     {

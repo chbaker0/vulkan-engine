@@ -6,6 +6,8 @@ add_library(vulkanwrapper OBJECT
   Device.hpp
   DeviceFunctionList.h
   DeviceObject.hpp
+  CommandPool.cpp
+  CommandPool.hpp
   )
 
 set_property(TARGET vulkanwrapper PROPERTY CXX_STANDARD 11)

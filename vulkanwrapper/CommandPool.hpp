@@ -2,6 +2,7 @@
 #define VULKANWRAPPER_COMMANDPOOL_HPP
 
 #include <exception>
+#include <string>
 
 #define VK_NO_PROTOTYPES
 #include <vulkan/vulkan.h>
@@ -39,7 +40,7 @@ public:
     {
         return details.c_str();
     }
-}
+};
 
 class Device;
 
@@ -58,7 +59,7 @@ public:
 private:
     Device *device;
     detail::DeviceObject<VkCommandPool> object;
-}
+};
 
 } // namespace vkw
 

@@ -30,15 +30,15 @@ public:
 
     ~DeviceObject()
     {
-        if (deviceHandle != nullptr && handle_in != nullptr && destroyer != nullptr)
+        if (deviceHandle != nullptr && handle != nullptr && destroyer != nullptr)
         {
             destroyer(deviceHandle, handle, nullptr);
         }
     }
 
-    DeviceObject(const Device& other) = delete;
-    DeviceObject(Device&& other) noexcept
-        : Device(nullptr, nullptr, nullptr)
+    DeviceObject(const DeviceObject& other) = delete;
+    DeviceObject(DeviceObject&& other) noexcept
+        : DeviceObject(nullptr, nullptr, nullptr)
     {
         std::swap(deviceHandle, other.deviceHandle);
         std::swap(handle, other.handle);
