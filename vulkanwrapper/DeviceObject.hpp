@@ -28,6 +28,10 @@ public:
     {
     }
 
+    DeviceObject() : DeviceObject(nullptr, nullptr, nullptr)
+    {
+    }
+
     ~DeviceObject()
     {
         if (deviceHandle != nullptr && handle != nullptr && destroyer != nullptr)

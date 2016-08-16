@@ -47,6 +47,8 @@ class Device;
 class CommandPool
 {
 public:
+    CommandPool() : device(nullptr) {}
+
     CommandPool(VkCommandPool handle, Device *device_in);
 
     void reset(bool releaseResources = false);
