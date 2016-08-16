@@ -53,6 +53,7 @@ public:
 };
 
 class Instance;
+class CommandPool;
 
 /**
  * \brief Wrapper around VkDevice
@@ -156,6 +157,8 @@ public:
     {
         return instance;
     }
+
+    CommandPool createCommandPool (const VkCommandPoolCreateInfo& createInfo);
 };
 
 } // namespace vkw

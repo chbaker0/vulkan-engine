@@ -1,4 +1,6 @@
 #include "Device.hpp"
+
+#include "CommandPool.hpp"
 #include "Instance.hpp"
 
 #include <cassert>
@@ -26,6 +28,20 @@ Device::~Device()
 
         functionPtrs.vkDestroyDevice(handle, nullptr);
     }
+}
+
+CommandPool Device::createCommandPool (const VkCommandPoolCreateInfo& createInfo)
+{
+    VkCommandPool commandPool;
+
+    VkResult result = functionPtrs.vkCreateCommandPool(handle, &createInfo, nullptr, &commandPool);
+
+    if (result != VK_SUCCESS)
+    {
+        throw DeviceException(result, "Failed to create command pool");
+    }
+
+    return CommandPool(commandPool, this);
 }
 
 } // namespace vkw
